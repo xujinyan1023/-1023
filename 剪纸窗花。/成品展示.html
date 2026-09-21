@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>剪窗花 - 成品页</title>
+    <style>
+        /* 网页背景：还是之前的浅粉桌布，保持一样的感觉 */
+        body {
+            background: #f8eeda;
+            /* 浅粉底色，不换桌布 */
+            text-align: center;
+            /* 所有东西都放中间 */
+            padding-top: 50px;
+            /* 上边留空，不贴边 */
+        }
+
+        /* 提示文字：像桌上贴的“剪好啦”纸条 */
+        .tipText {
+            font-size: 18px;
+            /* 字大一点，老人能看清 */
+            color: #d92b2b;
+            /* 红色字，喜庆 */
+            margin-bottom: 20px;
+            /* 离窗花近一点 */
+        }
+
+        /* 剪好的窗花：像桌上摆的成品花 */
+        .finishedFlower {
+            width: 600px;
+            /* 窗花宽300（手机上看正好） */
+            height: 600px;
+            /* 窗花高300 */
+            margin: 0 auto;
+            /* 窗花放正中间 */
+            border-radius: 8px;
+            /* 窗花边缘稍微圆一点，不扎手 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            /* 给窗花加个浅影子，更立体 */
+        }
+
+        /* 重新裁剪按钮：像桌上的另一个红按钮 */
+        .resetBtn {
+            margin-top: 30px;
+            /* 离窗花30远 */
+            padding: 10px 20px;
+            /* 按钮大小和之前一样 */
+            background: #d92b2b;
+            /* 深红色按钮，和裁剪页呼应 */
+            color: white;
+            /* 白色字 */
+            border: none;
+            /* 没边框 */
+            border-radius: 5px;
+            /* 圆边角 */
+            cursor: pointer;
+            /* 手指放上去变“点”的样子 */
+            font-size: 16px;
+            /* 字的大小适中 */
+        }
+    </style>
+    <style>
+        .paper-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ffffff;
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 18px;
+            font-weight: bold;
+            color: #d92b2b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .paper-icon {
+            width: 20px;
+            height: 20px;
+            background: #ffd9d9;
+            transform: rotate(5deg);
+            border: 1px solid #d92b2b;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 提示文字：告诉玩家剪好啦 -->
+    <h3 class="tipText">太棒啦！你的窗花剪好咯～</h3>
+
+    <!-- 剪好的窗花图片（用和你之前发的一样的花朵样式） -->
+    <img src="窗花1.png" class="finishedFlower" alt="完整的红窗花">
+
+    <!-- 重新裁剪按钮：点它回到裁剪页再剪一次 -->
+    <button class="resetBtn" onclick="window.location.href='index.html'">想再剪一次？点我返回</button>
+    <div class="paper-counter">
+        <div class="paper-icon"></div>
+        <span>剩余纸张：</span>
+        <span id="paperCount">10</span>
+        <span>张</span>
+    </div>
+    <script>
+        // 显示当前纸张数量
+        try {
+            const count = localStorage.getItem('paperCount') || '10';
+            document.getElementById('paperCount').textContent = count;
+        } catch (e) {
+            console.error('显示纸张数量失败:', e);
+        }
+    </script>
+</body>
+
+</html>

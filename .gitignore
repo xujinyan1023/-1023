@@ -1,0 +1,22 @@
+# Python缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django虚拟环境
+venv/
+env/
+
+# 数据库、密钥文件
+db.sqlite3
+.env
+
+# 压缩包、日志
+*.zip
+*.rar
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db

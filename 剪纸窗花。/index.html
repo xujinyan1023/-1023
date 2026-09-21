@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>剪窗花 - 裁剪页</title>
+    <style>
+        /* 网页背景：像铺了张浅粉桌布 */
+        body {
+            background: #f8eeda;
+            /* 浅粉底色 */
+            text-align: center;
+            /* 所有东西放中间 */
+            padding-top: 50px;
+            /* 上边留点儿空，别贴边 */
+            position: relative;
+            /* 新增：为了让纸张计数元素可以绝对定位 */
+        }
+
+        /* 新增：剩余纸张数量显示 */
+        .paper-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ffffff;
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 18px;
+            font-weight: bold;
+            color: #d92b2b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .paper-icon {
+            width: 20px;
+            height: 20px;
+            background: #ffd9d9;
+            transform: rotate(5deg);
+            border: 1px solid #d92b2b;
+        }
+
+        /* 装折好的纸的盒子：像个小托盘 */
+        .paperBox {
+            width: 200px;
+            /* 托盘宽200（手机上看正好） */
+            height: 200px;
+            /* 托盘高200 */
+            margin: 0 auto;
+            /* 托盘放桌子正中间 */
+            position: relative;
+            /* 固定托盘位置，方便放纸 */
+        }
+
+        /* 折好的三角形红纸：像你折的信纸三角 */
+        .foldedRedPaper {
+            width: 0;
+            height: 0;
+            /* 用边框拼出三角形：左右透明，底边红色 */
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 173px solid #ffd9d9;
+            /* 浅红色的纸 */
+            position: relative;
+            /* 固定纸的位置，方便放阴影 */
+        }
+
+        /* 要剪的阴影区域：像纸上画的要剪的花纹 */
+        .cutShadow {
+            position: absolute;
+            /* 贴在纸上 */
+            top: 30px;
+            /* 离纸的顶边30 */
+            left: 50px;
+            /* 离纸的左边50 */
+            width: 100px;
+            /* 阴影宽100 */
+            height: 120px;
+            /* 阴影高120 */
+            background: rgba(0, 0, 0, 0.2);
+            /* 半透明的灰色（像铅笔描的印） */
+            /* 阴影的形状：弯弯的花纹（就像要剪的花瓣边） */
+            clip-path: path('M50,0 C80,20 90,80 50,120 C10,80 20,20 50,0 Z');
+        }
+
+        /* 展开按钮：像桌上放的红按钮 */
+        .openBtn {
+            margin-top: 30px;
+            /* 离纸30远 */
+            padding: 10px 20px;
+            /* 按钮大小：上下10，左右20 */
+            background: #d92b2b;
+            /* 按钮是深红色 */
+            color: white;
+            /* 按钮上的字是白色 */
+            border: none;
+            /* 按钮没边框 */
+            border-radius: 5px;
+            /* 按钮角是圆的 */
+            cursor: pointer;
+            /* 手指放上去变成“点”的样子 */
+            font-size: 16px;
+            /* 字的大小（老人能看清） */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 新增：剩余纸张数量显示 -->
+    <div class="paper-counter">
+        <div class="paper-icon"></div>
+        <span>剩余纸张：</span>
+        <span id="paperCount">10</span>
+        <span>张</span>
+    </div>
+
+    <!-- 裁剪界面的所有东西都装在这个盒子里 -->
+    <div>
+        <!-- 提示文字：像桌上贴的纸条 -->
+        <h3>请将白色阴影部分裁剪掉</h3>
+        <!-- 这行代码就是“贴成品页”的动作，宽高可以调 -->
+        <iframe src="裁剪.html" width="700" height="900" style="border: none;"></iframe>
+
+        <!-- 装折好的纸的托盘 -->
+        <!-- <div class="paperBox"> -->
+        <!-- 折好的三角形红纸 -->
+        <!-- <div class="foldedRedPaper"> -->
+        <!-- 要剪的阴影区域 -->
+        <!-- <div class="cutShadow"></div> -->
+        <!-- </div> -->
+        <!-- </div> -->
+
+        <!-- 展开按钮：点它就能看剪好的花 -->
+        <button class="openBtn" id="openButton" onclick="checkAndOpenResult()">点我展开看窗花</button>
+    </div>
+
+    <script>
+        // 初始化纸张数量
+        function initPaperCount() {
+            try {
+                // 检查localStorage中是否已有纸张数量
+                let count = localStorage.getItem('paperCount');
+                if (count === null) {
+                    // 如果没有，初始化为10张
+                    localStorage.setItem('paperCount', '10');
+                    count = '10';
+                }
+                // 更新显示
+                document.getElementById('paperCount').textContent = count;
+
+                // 如果纸张用完了，禁用按钮
+                if (parseInt(count) <= 0) {
+                    document.getElementById('openButton').disabled = true;
+                    document.getElementById('openButton').style.backgroundColor = '#ccc';
+                    document.getElementById('openButton').style.cursor = 'not-allowed';
+                }
+            } catch (e) {
+                console.error('初始化纸张数量失败:', e);
+            }
+        }
+
+        // 更新纸张数量显示
+        function updatePaperCountDisplay() {
+            try {
+                const count = localStorage.getItem('paperCount') || '10';
+                document.getElementById('paperCount').textContent = count;
+            } catch (e) {
+                console.error('更新纸张数量显示失败:', e);
+            }
+        }
+
+        // 减少纸张数量（当完成一张窗花时）
+        function decreasePaperCount() {
+            try {
+                let count = parseInt(localStorage.getItem('paperCount') || '10');
+                if (count > 0) {
+                    count--;
+                    localStorage.setItem('paperCount', count.toString());
+                    updatePaperCountDisplay();
+
+                    // 如果纸张用完了，禁用按钮
+                    if (count <= 0) {
+                        document.getElementById('openButton').disabled = true;
+                        document.getElementById('openButton').style.backgroundColor = '#ccc';
+                        document.getElementById('openButton').style.cursor = 'not-allowed';
+                    }
+                }
+                return count;
+            } catch (e) {
+                console.error('减少纸张数量失败:', e);
+                return 0;
+            }
+        }
+
+        // 检查裁剪进度并决定是否允许打开结果
+        function checkAndOpenResult() {
+            try {
+                // 首先检查纸张数量
+                const paperCount = parseInt(localStorage.getItem('paperCount') || '10');
+                if (paperCount <= 0) {
+                    alert('纸张已用完！');
+                    return;
+                }
+
+                const progressData = localStorage.getItem('clippingProgress');
+                if (progressData) {
+                    const { ratio, isCompleted } = JSON.parse(progressData);
+                    if (isCompleted) {
+                        // 减少纸张数量
+                        const newCount = decreasePaperCount();
+                        // 重置裁剪进度，为下一张做准备
+                        localStorage.setItem('clippingProgress', JSON.stringify({
+                            ratio: 0,
+                            isCompleted: false,
+                            timestamp: Date.now()
+                        }));
+                        // 跳转到成品展示页
+                        window.location.href = '成品展示.html';
+                    } else {
+                        // 计算还需要裁剪的比例
+                        const remainingRatio = (1 / 4 - ratio) * 100;
+                        alert(`请继续裁剪！还需要裁剪约${remainingRatio.toFixed(1)}%的区域才能查看结果。`);
+                    }
+                } else {
+                    alert('请先开始裁剪！');
+                }
+            } catch (e) {
+                console.error('无法读取裁剪进度:', e);
+                alert('无法检查裁剪进度，请确保浏览器支持localStorage。');
+            }
+        }
+
+        // 定期检查裁剪进度并更新按钮状态
+        function updateButtonState() {
+            try {
+                const progressData = localStorage.getItem('clippingProgress');
+                const openButton = document.getElementById('openButton');
+
+                // 检查纸张数量
+                const paperCount = parseInt(localStorage.getItem('paperCount') || '10');
+                if (paperCount <= 0) {
+                    openButton.disabled = true;
+                    openButton.style.backgroundColor = '#ccc';
+                    openButton.style.cursor = 'not-allowed';
+                    return;
+                } else {
+                    openButton.disabled = false;
+                    openButton.style.cursor = 'pointer';
+                }
+
+                if (progressData) {
+                    const { ratio, isCompleted } = JSON.parse(progressData);
+                    // 根据进度更新按钮样式
+                    if (isCompleted) {
+                        openButton.style.backgroundColor = '#d92b2b';
+                    } else {
+                        openButton.style.backgroundColor = '#d92b2b'; // 保持原有颜色
+                    }
+                }
+            } catch (e) {
+                console.error('更新按钮状态失败:', e);
+            }
+        }
+
+        // 初始化
+        initPaperCount();
+
+        // 定期检查，确保按钮状态及时更新
+        setInterval(() => {
+            updateButtonState();
+            updatePaperCountDisplay();
+        }, 500);
+
+        // 初始检查
+        updateButtonState();
+    </script>
+</body>
+
+</html>
